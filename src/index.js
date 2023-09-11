@@ -1,8 +1,18 @@
-const express = require('express');
+import express from 'express';
+import cors from 'cors';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv'
+import morgan from 'morgan';
+import userRouter from './routes/users.js';
 
+dotenv.config();
 const app = express();
+app.use(express.json());
 
-app.get('/sayings', (req, res) => {
-    res.send('Da asara gara gidadanci.')
-})
-app.listen(8080)
+app.use("/auth", userRouter);
+
+mongoose.connect(
+    `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PWD}@sayings.xgaop6e.mongodb.net/`
+)
+
+app.listen(8080, () => console.log("Jari Server Started!!!"));
