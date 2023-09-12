@@ -8,11 +8,13 @@ import userRouter from './routes/users.js';
 dotenv.config();
 const app = express();
 app.use(express.json());
-
+app.use(cors())
 app.use("/auth", userRouter);
 
 mongoose.connect(
     `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PWD}@sayings.xgaop6e.mongodb.net/`
 )
-
+.then((res)=>console.log("Connected to Database"))
+.catch(()=>"Error Connecting to Database")
+ 
 app.listen(8080, () => console.log("Jari Server Started!!!"));
