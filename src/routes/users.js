@@ -2,6 +2,7 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import { UserModel } from "../models/Users.js";
 import bcrypt from 'bcrypt'; 
+
 const userRouter = express.Router();
 
 userRouter.post("/register", async(req, res)=>{
@@ -24,13 +25,13 @@ userRouter.post("/login", async (req, res)=>{
     const user = await UserModel.findOne({username});
 
     if(!user){
-        return res.json({message:"User does not exist!"});
+        return res.status(401).json({message:"User does not exist!"});
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if(!isPasswordValid){
-        return res.json({message:"Username or Password Is Incorrect!"});
+        return res.status(401).json({message:"Username or Password Is Incorrect!"});
     }
 
     const token = jwt.sign({ id:user._id}, process.env.JWT_SIGN_KEY);

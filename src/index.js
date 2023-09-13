@@ -4,12 +4,14 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv'
 import morgan from 'morgan';
 import userRouter from './routes/users.js';
+import { sayingsRouter } from './routes/sayings.js';
 
 dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(cors())
 app.use("/auth", userRouter);
+app.use("/sayings", sayingsRouter)
 
 mongoose.connect(
     `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PWD}@sayings.xgaop6e.mongodb.net/`
@@ -17,4 +19,4 @@ mongoose.connect(
 .then((res)=>console.log("Connected to Database"))
 .catch(()=>"Error Connecting to Database")
  
-app.listen(8080, () => console.log("Jari Server Started!!!"));
+app.listen(8080, () => console.log("Jari Server Started!!!")); 
