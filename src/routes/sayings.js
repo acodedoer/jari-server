@@ -19,6 +19,22 @@ sayingsRouter.get("/",async (req, res) => {
     }
 })
 
+sayingsRouter.delete('/:id', async (req, res) => {
+    try {
+      const sayingId = req.params.id;
+      const deletedSaying = await SayingModel.findByIdAndDelete(sayingId);
+  
+      if (!deletedSaying) {
+        return res.status(404).json({ error: 'Saying not found' });
+      }
+  
+      res.json({ message: 'Saying deleted successfully' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'An error occurred' });
+    }
+});
+
 sayingsRouter.put("/", async (req, res) => {
     try{
         const saying = await SayingModel.findById(req.body.sayingID);
