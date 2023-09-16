@@ -31,11 +31,11 @@ sayingsRouter.put("/", async (req, res) => {
     }
 })
 
-sayingsRouter.get("/savedRecipes/ids", async (req, res) => {
+sayingsRouter.get("/savedSayings/ids", async (req, res) => {
     try{
         await UserModel.findById(req.body.userID)
         .then((response)=>{
-            res.json({savedRecipes: response.savedRecipes});
+            res.json({savedSayings: response.savedSayings});
         })
         .catch((err)=> res.status(401).json(err));
     }catch(err){
@@ -43,14 +43,14 @@ sayingsRouter.get("/savedRecipes/ids", async (req, res) => {
     }
 })
 
-sayingsRouter.get("/savedRecipes", async (req, res) => {
+sayingsRouter.get("/savedSayings", async (req, res) => {
     try{
         await UserModel.findById(req.body.userID)
         .then((response)=>{
-           const savedRecipes = SayingModel.find({
-            _id: {$in: response.savedRecipes}
+           const savedSayings = SayingModel.find({
+            _id: {$in: response.savedSayings}
            })
-           res.json(savedRecipes)
+           res.json(savedSayings)
         })
         .catch((err)=> res.status(401).json(err));
     }catch(err){
@@ -62,9 +62,12 @@ sayingsRouter.post("/", async (req, res)=>{
     const saying = new SayingModel(req.body)
     try{
         await saying.save()
-        .then((response)=> res.status(200).json(response))
-        .catch((err)=> res.status(200).json(err));
+        .then((response)=> {
+            console.log(response)
+            res.status(200).json(response)
+        })
+        .catch((err)=> res.status(401).json(err));
     } catch(err){
-        res.status(200).json(err)
+        res.status(401).json(err)
     }
-})
+}) 
