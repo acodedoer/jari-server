@@ -47,6 +47,17 @@ sayingsRouter.put("/", async (req, res) => {
     }
 })
 
+sayingsRouter.put("/:id", async (req, res) => {
+    try{
+        const sayingId = req.params.id;
+        await SayingModel.findByIdAndUpdate(sayingId,req.body.saying)
+        .then((response)=>res.status(200).json(response))
+        .catch((err)=>res.status(400).json(err));
+    }catch(err){
+        res.status(401).json(err);
+    }
+})
+
 sayingsRouter.get("/savedSayings/ids", async (req, res) => {
     try{
         await UserModel.findById(req.body.userID)
