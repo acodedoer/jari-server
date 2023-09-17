@@ -7,8 +7,48 @@ export const sayingsRouter  = express.Router();
 
 sayingsRouter.get("/",async (req, res) => {
     try{
-        await SayingModel.find({})
-        .then((response)=>{
+        await SayingModel.aggregate([
+            {
+              $lookup: {
+                from: 'tags',
+                localField: 'tags',
+                foreignField: '_id',
+                as: 'tagDetails'
+              }
+            }
+          ])
+          .then((response)=>{
+            res.status(200).json(response);
+        })
+        .catch((err)=>{
+            res.status(401).json(err);
+        })
+    } catch (err){
+        res.status(401).json(err);
+    }
+})
+
+sayingsRouter.get("/:tag",async (req, res) => {
+    const tagId = req.params.tag;
+    try{
+        await SayingModel.aggregate([
+            {
+                $match: {
+                    tags: {
+                        $elemMatch: { $eq: new mongoose.Types.ObjectId(tagId) }
+                      }
+                }
+            },
+            {
+              $lookup: {
+                from: 'tags',
+                localField: 'tags',
+                foreignField: '_id',
+                as: 'tagDetails'
+              }
+            }
+          ])
+          .then((response)=>{
             res.status(200).json(response);
         })
         .catch((err)=>{
@@ -36,7 +76,7 @@ sayingsRouter.delete('/:id', async (req, res) => {
 });
 
 sayingsRouter.put("/", async (req, res) => {
-    try{
+    try{ 
         const saying = await SayingModel.findById(req.body.sayingID);
         const user = await UserModel.findById(req.body.userID);
         user.savedSayings.push(saying);
