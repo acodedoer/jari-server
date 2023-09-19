@@ -5,7 +5,8 @@ import mongoose from "mongoose";
 
 export const sayingsRouter  = express.Router();
 
-sayingsRouter.get("/",async (req, res) => {
+sayingsRouter.get("/:sort?",async (req, res) => {
+    const sort = Number(req.params.sort) || -1;
     try{
         await SayingModel.aggregate([
             {
@@ -15,6 +16,11 @@ sayingsRouter.get("/",async (req, res) => {
                 foreignField: '_id',
                 as: 'tagDetails'
               }
+            },
+            {
+                $sort: {
+                    edited: sort
+                }
             }
           ])
           .then((response)=>{
@@ -28,14 +34,22 @@ sayingsRouter.get("/",async (req, res) => {
     }
 })
 
-sayingsRouter.get("/:tag",async (req, res) => {
-    const tagId = req.params.tag;
+sayingsRouter.get("/:tag?/:sort?",async (req, res) => {
+    const tagId = req.params.tag || undefined;
+    const sort = Number(req.params.sort) || -1;
     try{
         await SayingModel.aggregate([
-            {
+            tagId===undefined?null:{
                 $match: {
                     tags: {
                         $elemMatch: { $eq: new mongoose.Types.ObjectId(tagId) }
+                      }
+                }
+            },
+            {
+                $match: {
+                    tags: {
+                        $elemMatch: { $eq: new mongoose.Types.ObjectId('6505bd905d0e691d0a16a87c') }
                       }
                 }
             },
@@ -46,6 +60,11 @@ sayingsRouter.get("/:tag",async (req, res) => {
                 foreignField: '_id',
                 as: 'tagDetails'
               }
+            },
+            {
+                $sort: {
+                    edited:sort
+                }
             }
           ])
           .then((response)=>{
@@ -137,4 +156,4 @@ sayingsRouter.post("/", async (req, res)=>{
     } catch(err){
         res.status(401).json(err)
     }
-}) 
+});
