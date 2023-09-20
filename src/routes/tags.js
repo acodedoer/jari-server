@@ -5,7 +5,6 @@ import mongoose from "mongoose";
 export const tagsRouter  = express.Router();
 
 tagsRouter.get("/",async (req, res) => {
-
     try{
         await TagModel.find({})
         .then((response)=>{
@@ -37,8 +36,8 @@ tagsRouter.put("/", async (req, res) => {
 
 
 tagsRouter.post("/", async (req, res)=>{
-    const tag = new TagModel(req.body)
     try{
+        const tag = new TagModel(req.body)
         await tag.save()
         .then((response)=> {
             res.status(200).json(response)

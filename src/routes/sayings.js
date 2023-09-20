@@ -6,8 +6,8 @@ import mongoose from "mongoose";
 export const sayingsRouter  = express.Router();
 
 sayingsRouter.get("/:sort?",async (req, res) => {
-    const sort = Number(req.params.sort) || -1;
     try{
+        const sort = Number(req.params.sort) || -1;
         await SayingModel.aggregate([
             {
               $lookup: {
@@ -35,24 +35,19 @@ sayingsRouter.get("/:sort?",async (req, res) => {
 })
 
 sayingsRouter.get("/:tag?/:sort?",async (req, res) => {
-    const tagId = req.params.tag || undefined;
-    const sort = Number(req.params.sort) || -1;
     try{
-        await SayingModel.aggregate([
-            tagId===undefined?null:{
-                $match: {
-                    tags: {
-                        $elemMatch: { $eq: new mongoose.Types.ObjectId(tagId) }
-                      }
-                }
-            },
-            {
-                $match: {
-                    tags: {
-                        $elemMatch: { $eq: new mongoose.Types.ObjectId('6505bd905d0e691d0a16a87c') }
-                      }
-                }
-            },
+        const tags = req.params.tag.length>0 && req.params.tag.split(",");
+        const sort = Number(req.params.sort) || -1;
+        const matchers = [];
+        tags && tags.length>0 && tags.forEach(tag => tag.length>0 && tag!="" && matchers.push({
+            $match: {
+                tags: {
+                    $elemMatch: { $eq: new mongoose.Types.ObjectId(tag) }
+                  }
+            }
+        }));
+        await SayingModel.aggregate([ 
+            ...matchers,
             {
               $lookup: {
                 from: 'tags',
@@ -149,7 +144,6 @@ sayingsRouter.post("/", async (req, res)=>{
     try{
         await saying.save()
         .then((response)=> {
-            console.log(response)
             res.status(200).json(response)
         })
         .catch((err)=> res.status(401).json(err));
