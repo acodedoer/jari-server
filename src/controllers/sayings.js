@@ -6,7 +6,6 @@ export const getSayings = async (req, res) => {
         const tags = req.params.tag === "-1"?"":req.params.tag.length>0 && req.params.tag.split(",");
         const sort = Number(req.params.sort) || -1;
         const matchers = [];
-        console.log(tags)
         tags && tags.length>0 && tags.forEach(tag => tag.length>0 && tag!="" && matchers.push({
             $match: {
                 tags: {
@@ -69,13 +68,16 @@ export const updateSaying = async (req, res) => {
 
 export const createSaying = async (req, res)=>{
     const saying = new SayingModel(req.body)
+
     try{
         await saying.save()
         .then((response)=> {
             res.status(200).json(response);
         })
-        .catch((err)=> res.status(401).json(err));
+        .catch((err)=> {
+            return res.status(401).json(err)
+        })
     } catch(err){
-        res.status(401).json(err);
+        return res.status(401).json(err)
     }
 }

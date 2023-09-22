@@ -17,8 +17,9 @@ export const registerUser = async(req,res) => {
             firstname, lastname, email, password:passwordHash
         })
 
-        const savedUser = await  newUser.save();
-        res.status(201).json(savedUser);
+        await  newUser.save()
+        .then(({_id, firstname, lastname, email, token, isVerified}) => res.status(201).json({_id, firstname, lastname, email, token, isVerified}))
+
     } catch (err) {
         res.status(err.code).json({message: err.message});
     }
@@ -40,8 +41,8 @@ export const loginUser = async (req, res)=>{
         }
   
         const token = jwt.sign({ id:user._id}, process.env.JWT_SIGN_KEY);
-        delete user.password; 
-        res.json({token, userID: user})     
+        const {_id, firstname, lastname, isVerified} = user;
+        res.json({token, _id, firstname, lastname, isVerified })     
     } catch( err ){
         res.status(err.code).json({message: err.message});
     }
