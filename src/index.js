@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv'
 import morgan from 'morgan';
 import userRouter from './routes/users.js';
-import { sayingsRouter } from './routes/sayings.js';
+import sayingsRouter from './routes/sayings.js';
 import { tagsRouter } from './routes/tags.js';
 
 dotenv.config();
