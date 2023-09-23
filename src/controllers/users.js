@@ -4,7 +4,14 @@ import bcrypt from 'bcrypt';
 
 export const registerUser = async(req,res) => {
     try{
-        const {firstname, lastname, email, password} = req.body;
+        let {firstname, lastname, email, password} = req.body
+
+        email = email.toLowerCase();
+        firstname = firstname.toLowerCase();
+        lastname = lastname.toLowerCase();
+
+        if(password.length<8) return res.status(409).json({"message":"Password must be at least 8 characters long!"})
+
         const checkEmail = await UserModel.findOne({email});
         if(checkEmail){
            return res.status(409).json({"message":"Email in use!"})
